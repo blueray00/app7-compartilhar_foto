@@ -1,6 +1,10 @@
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useRef, useState } from 'react';
+import React from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import * as MediaLibrary from 'expo-media-library';
+import * Sharing from 'expo-sharing';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function App() {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -26,6 +30,25 @@ export default function App() {
   function toggleCameraFacing() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
   }
+
+  async function takePhoto() {
+    if (cameraRef.current && isCameraReady) {
+      await cameraRef.current.takePictureAsync().then(photo => {
+        setPhoto(photo.uri);
+      });
+    }
+  }
+  async function savePhoto() {
+    if (photo && photo.length > 0) {
+      await MediaLibrary.saveToLbraryAsync(photo).then(res = > {
+        alert('Foto salva na galeria!')
+      })
+      .catch(err = > {
+        alert('Ocorreu um erro: ${err}')
+      });
+    }
+  }
+  
 
   //Permite tirar uma foto e armanzenar a referência em uma variável de estado
   function takePhoto() {
